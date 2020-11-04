@@ -52,8 +52,6 @@
           :source="videoSourceInfo"
           @update-time="playerUpdateTime"
         />
-        <ShieldBar />
-        <Control />
       </div>
       <div slot="right" class="right-panel scroll">
         <Subtitle
@@ -80,12 +78,10 @@ import "./main.css";
 import FileInput from "./FileInput.vue";
 import Video from "./Video.vue";
 import Subtitle from "./Subtitle.vue";
-import ShieldBar from "./ShieldBar.vue";
-import Control from "./Control.vue";
 
 export default {
   name: "Hello",
-  components: { FileInput, Video, Subtitle, ShieldBar, Control },
+  components: { FileInput, Video, Subtitle },
   data() {
     return {
       split: 0.6,

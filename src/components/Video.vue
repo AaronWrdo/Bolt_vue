@@ -3,7 +3,6 @@
     <video-player
       ref="videoPlayer"
       :options="playerOptions"
-      :playsinline="true"
       @play="onPlayerPlay($event)"
       @pause="onPlayerPause($event)"
       @ended="onPlayerEnded($event)"
@@ -16,14 +15,30 @@
       @ready="playerReadied"
     >
     </video-player>
+    <Control
+      :shieldBarVisible="shieldBarVisible"
+      @change-shieldbar-visible="changeShieldBarVis"
+      @change-velocity="changeVelocity"
+    />
+    <ShieldBar v-if="shieldBarVisible" />
   </div>
 </template>
 <script>
 import "video.js/dist/video-js.css";
 import { videoPlayer } from "vue-video-player";
+import ShieldBar from "./ShieldBar.vue";
+import Control from "./Control.vue";
+
 export default {
   components: {
-    videoPlayer
+    videoPlayer,
+    ShieldBar,
+    Control
+  },
+  data() {
+    return {
+      shieldBarVisible: false
+    };
   },
   props: {
     source: {
@@ -34,12 +49,13 @@ export default {
     // videojs options
     playerOptions() {
       return {
-        height: "360",
-        autoplay: false,
+        // height: "360",
+        autoplay: true,
         muted: false,
         language: "en",
         playbackRates: [0.8, 1.0, 1.2, 1.4, 1.6],
-        sources: [{ ...this.source }]
+        sources: [{ ...this.source }],
+        controls: false
       };
     },
     player() {
@@ -51,24 +67,6 @@ export default {
     // this.player.play();
     // console.log("play");
   },
-  // mounted() {
-  // console.log('this is current player instance object', this.player)
-  // setTimeout(() => {
-  // console.log("dynamic change options", this.player);
-  // change src
-  // this.playerOptions.sources[0].src = 'https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm';
-  // change item
-  // this.$set(this.playerOptions.sources, 0, {
-  //   type: "video/mp4",
-  //   src: 'https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm',
-  // })
-  // change array
-  // this.playerOptions.sources = [{
-  //   type: "video/mp4",
-  //   src: 'https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm',
-  // }]
-  // }, 5000);
-  // },
   methods: {
     // listen event
     onPlayerPlay(player) {
@@ -97,6 +95,7 @@ export default {
     },
     onPlayerCanplaythrough(player) {
       console.log("player Canplaythrough!", player);
+      this.player.play().then(res => console.log(res));
     },
     // or listen state event
     // playerStateChanged(playerCurrentState) {
@@ -104,9 +103,21 @@ export default {
     // },
     // player is ready
     playerReadied(player) {
-      // seek to 10s
       console.log("example player 1 readied", player);
-      player.currentTime(0);
+    },
+    changeShieldBarVis(isVisible) {
+      this.shieldBarVisible = isVisible;
+    },
+    changeVelocity(velo) {
+      console.log(this.player);
+      console.log(velo);
+      this.player.playbackRate(velo);
+    },
+    toggleIsPlaying() {
+      console.log(this.player.paused());
+      console.log(this.player);
+      if (this.player.paused()) this.player.play();
+      else this.player.pause();
     }
   }
 };
@@ -116,16 +127,17 @@ export default {
   width: 100%;
 }
 .player-wrapper .video-player {
-  // height: 80%;
   width: 100%;
-  .vjs-control-bar {
-    display: none;
-  }
+  height: 70%;
 }
 .video-player > * {
   width: 100%;
+  height: 100%;
 }
-.video-js .vjs-tech {
-  height: auto;
+// .video-js .vjs-tech {
+//   height: 100%;
+// }
+.video-js .vjs-control-bar {
+  display: none;
 }
 </style>

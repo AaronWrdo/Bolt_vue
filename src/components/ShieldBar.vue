@@ -2,13 +2,12 @@
   <VueDragResize
     class="shield-bar"
     :isActive="true"
-    :w="200"
-    :h="200"
+    :parentLimitation="true"
+    :w="400"
+    :h="50"
     v-on:resizing="resize"
     v-on:dragging="resize"
   >
-    <p>{{ top }} х {{ left }}</p>
-    <p>{{ width }} х {{ height }}</p>
   </VueDragResize>
 </template>
 <script>
@@ -22,7 +21,7 @@ export default {
     return {
       width: 0,
       height: 0,
-      top: 0,
+      bottom: 0,
       left: 0
     };
   },
@@ -30,7 +29,7 @@ export default {
     resize(newRect) {
       this.width = newRect.width;
       this.height = newRect.height;
-      this.top = newRect.top;
+      this.bottom = newRect.bottom;
       this.left = newRect.left;
     }
   }
