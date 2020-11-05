@@ -67,26 +67,18 @@ export default {
     }
   },
   mounted() {
-    document.addEventListener("keydown", e =>
-      handleVideoShortcut(e, this.player)
-    );
+    document.addEventListener("keydown", this.videoShortcutHandler);
+    if (this.transcriptsLoaded)
+      document.addEventListener("keydown", this.transcriptShortcutHandler);
+  },
+  beforeDestroy() {
+    document.removeEventListener("keydown", this.videoShortcutHandler);
+    document.addEventListener("keydown", this.transcriptShortcutHandler);
   },
   watch: {
     transcriptsLoaded(val) {
-      console.log("cur", this.player.currentTime());
       if (val)
-        document.addEventListener("keydown", e =>
-          handleTranscriptShortcut(
-            e,
-            this.player,
-            this.subtitles,
-            this.activeTranscriptIndex
-          )
-        );
-      // else
-      //   document.removeEventListener("keydown", e =>
-      //     handleVideoShortcut(e, this.player)
-      //   );
+        document.addEventListener("keydown", this.transcriptShortcutHandler);
     }
   },
   methods: {
@@ -106,6 +98,17 @@ export default {
       console.log(this.player);
       if (this.player.paused()) this.player.play();
       else this.player.pause();
+    },
+    videoShortcutHandler(e) {
+      handleVideoShortcut(e, this.player);
+    },
+    transcriptShortcutHandler(e) {
+      handleTranscriptShortcut(
+        e,
+        this.player,
+        this.subtitles,
+        this.activeTranscriptIndex
+      );
     }
   }
 };

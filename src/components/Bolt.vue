@@ -95,18 +95,13 @@ export default {
       videoName: "",
       subtitles: [],
       currentPlayTime: 0,
-      videoRef: {}
+      videoRef: {},
+      activeTranscriptIndex: 0
     };
   },
   computed: {
     videoPlayer() {
       return this.$refs.videoRef.player;
-    },
-    activeTranscriptIndex() {
-      return this.subtitles.findIndex(
-        line =>
-          line.from < this.currentPlayTime && line.to > this.currentPlayTime
-      );
     }
   },
   methods: {
@@ -122,10 +117,13 @@ export default {
     },
     playerUpdateTime(curTime) {
       this.currentPlayTime = curTime;
+      const index = this.subtitles.findIndex(
+        line =>
+          line.from < this.currentPlayTime && line.to > this.currentPlayTime
+      );
+      if (index !== -1) this.activeTranscriptIndex = index;
     },
     subtitleStartPlayFrom(from) {
-      // console.log(this.$refs.videoRef);
-      // console.log(this.videoPlayer);
       this.currentPlayTime = from;
       this.videoPlayer.currentTime(from);
       this.videoPlayer.play();
