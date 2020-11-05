@@ -50,6 +50,9 @@
           v-else
           ref="videoRef"
           :source="videoSourceInfo"
+          :transcriptsLoaded="subtitles.length > 0"
+          :subtitles="subtitles"
+          :activeTranscriptIndex="activeTranscriptIndex"
           @update-time="playerUpdateTime"
         />
       </div>
@@ -98,6 +101,12 @@ export default {
   computed: {
     videoPlayer() {
       return this.$refs.videoRef.player;
+    },
+    activeTranscriptIndex() {
+      return this.subtitles.findIndex(
+        line =>
+          line.from < this.currentPlayTime && line.to > this.currentPlayTime
+      );
     }
   },
   methods: {

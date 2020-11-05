@@ -44,7 +44,12 @@ export default {
   },
   watch: {
     isActive(val) {
-      if (val) this.$el.scrollIntoView({ block: "center", inline: "nearest" });
+      if (val)
+        this.$el.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest"
+        });
     }
   }
 };

@@ -3,16 +3,7 @@
     <video-player
       ref="videoPlayer"
       :options="playerOptions"
-      @play="onPlayerPlay($event)"
-      @pause="onPlayerPause($event)"
-      @ended="onPlayerEnded($event)"
-      @loadeddata="onPlayerLoadeddata($event)"
-      @waiting="onPlayerWaiting($event)"
-      @playing="onPlayerPlaying($event)"
       @timeupdate="onPlayerTimeupdate($event)"
-      @canplay="onPlayerCanplay($event)"
-      @canplaythrough="onPlayerCanplaythrough($event)"
-      @ready="playerReadied"
     >
     </video-player>
     <Control
@@ -28,6 +19,10 @@ import "video.js/dist/video-js.css";
 import { videoPlayer } from "vue-video-player";
 import ShieldBar from "./ShieldBar.vue";
 import Control from "./Control.vue";
+import {
+  handleVideoShortcut,
+  handleTranscriptShortcut
+} from "../utils/hotkeys";
 
 export default {
   components: {
@@ -43,6 +38,15 @@ export default {
   props: {
     source: {
       type: Object
+    },
+    transcriptsLoaded: {
+      type: Boolean
+    },
+    subtitles: {
+      type: Array
+    },
+    activeTranscriptIndex: {
+      type: Number
     }
   },
   computed: {
@@ -50,12 +54,12 @@ export default {
     playerOptions() {
       return {
         // height: "360",
-        autoplay: true,
+        autoplay: false,
         muted: false,
         language: "en",
         playbackRates: [0.8, 1.0, 1.2, 1.4, 1.6],
         sources: [{ ...this.source }],
-        controls: false
+        controls: true
       };
     },
     player() {
@@ -63,47 +67,31 @@ export default {
     }
   },
   mounted() {
-    // this.player.currentTime(10);
-    // this.player.play();
-    // console.log("play");
+    document.addEventListener("keydown", e =>
+      handleVideoShortcut(e, this.player)
+    );
+  },
+  watch: {
+    transcriptsLoaded(val) {
+      console.log("cur", this.player.currentTime());
+      if (val)
+        document.addEventListener("keydown", e =>
+          handleTranscriptShortcut(
+            e,
+            this.player,
+            this.subtitles,
+            this.activeTranscriptIndex
+          )
+        );
+      // else
+      //   document.removeEventListener("keydown", e =>
+      //     handleVideoShortcut(e, this.player)
+      //   );
+    }
   },
   methods: {
-    // listen event
-    onPlayerPlay(player) {
-      console.log("player play!", player);
-    },
-    onPlayerPause(player) {
-      console.log("player pause!", player);
-    },
-    onPlayerEnded(player) {
-      console.log("player ended!", player);
-    },
-    onPlayerLoadeddata(player) {
-      console.log("player Loadeddata!", player);
-    },
-    onPlayerWaiting(player) {
-      console.log("player Waiting!", player);
-    },
-    onPlayerPlaying(player) {
-      console.log("player Playing!", player);
-    },
     onPlayerTimeupdate(player) {
       this.$emit("update-time", player.currentTime());
-    },
-    onPlayerCanplay(player) {
-      console.log("player Canplay!", player);
-    },
-    onPlayerCanplaythrough(player) {
-      console.log("player Canplaythrough!", player);
-      this.player.play().then(res => console.log(res));
-    },
-    // or listen state event
-    // playerStateChanged(playerCurrentState) {
-    //   console.log("player current update state", playerCurrentState);
-    // },
-    // player is ready
-    playerReadied(player) {
-      console.log("example player 1 readied", player);
     },
     changeShieldBarVis(isVisible) {
       this.shieldBarVisible = isVisible;
