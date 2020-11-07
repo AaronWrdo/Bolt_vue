@@ -134,7 +134,7 @@ export default {
     },
     markLine(line) {
       const findIdx = this.remarks.findIndex(
-        remark => remark.index === line.index
+        remark => remark.text1 === line.text1
       );
       if (findIdx !== -1) this.remarks.splice(findIdx, 1);
       else this.remarks.push({ ...line, notes: "" });
