@@ -6,7 +6,11 @@
         type="ios-play"
         @click="$emit('start-play-from', item.from)"
       />
-      <Icon size="22" type="ios-star-outline" />
+      <Icon
+        size="22"
+        :type="isMarked ? 'md-heart' : 'md-heart-outline'"
+        @click="$emit('mark-line', item)"
+      />
     </div>
     <div :id="item.from" :index="index">
       <div class="major-subtitle">
@@ -26,6 +30,13 @@ export default {
       return (
         this.curPlaySecs > this.item.from && this.curPlaySecs < this.item.to
       );
+    },
+    isMarked() {
+      return (
+        this.remarks.findIndex(
+          remark => remark.from === this.item.from && remark.to === this.item.to
+        ) !== -1
+      );
     }
   },
   props: {
@@ -40,6 +51,9 @@ export default {
     },
     subtitlesNum: {
       type: Number
+    },
+    remarks: {
+      type: Array
     }
   },
   watch: {

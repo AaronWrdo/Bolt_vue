@@ -37,7 +37,7 @@
     </nav>
     <Split v-model="split" class="main">
       <div slot="left" class="left-panel">
-        <h3 id="title">{{ this.videoName }}</h3>
+        <h3 id="title" v-if="this.videoName">{{ this.videoName }}</h3>
         <label v-if="videoName.length === 0" for="file" class="file-choser">
           <div class="file-choser-desc">
             <svg class="icon" aria-hidden="true">
@@ -52,6 +52,7 @@
           :source="videoSourceInfo"
           :transcriptsLoaded="subtitles.length > 0"
           :subtitles="subtitles"
+          :remarks="remarks"
           :activeTranscriptIndex="activeTranscriptIndex"
           @update-time="playerUpdateTime"
         />
@@ -60,8 +61,10 @@
         <Subtitle
           v-if="subtitles.length > 0"
           :subtitles="subtitles"
+          :remarks="remarks"
           :curPlaySecs="currentPlayTime"
           @start-play-from="subtitleStartPlayFrom"
+          @mark-line="markLine"
         />
         <label v-else for="file" class="file-choser">
           <div class="file-choser-desc">
@@ -94,6 +97,7 @@ export default {
       },
       videoName: "",
       subtitles: [],
+      remarks: [],
       currentPlayTime: 0,
       videoRef: {},
       activeTranscriptIndex: 0
@@ -127,6 +131,13 @@ export default {
       this.currentPlayTime = from;
       this.videoPlayer.currentTime(from);
       this.videoPlayer.play();
+    },
+    markLine(line) {
+      const findIdx = this.remarks.findIndex(
+        remark => remark.index === line.index
+      );
+      if (findIdx !== -1) this.remarks.splice(findIdx, 1);
+      else this.remarks.push({ ...line, notes: "" });
     }
   }
 };

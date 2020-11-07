@@ -6,7 +6,9 @@
         :index="index"
         :curPlaySecs="curPlaySecs"
         :subtitlesNum="subtitles.length"
+        :remarks="remarks"
         @start-play-from="onPlay"
+        @mark-line="onMark"
       />
     </div>
   </div>
@@ -22,6 +24,9 @@ export default {
     subtitles: {
       type: Array
     },
+    remarks: {
+      type: Array
+    },
     curPlaySecs: {
       type: Number
     }
@@ -29,6 +34,9 @@ export default {
   methods: {
     onPlay(from) {
       this.$emit("start-play-from", from);
+    },
+    onMark(line) {
+      this.$emit("mark-line", line);
     }
   }
 };

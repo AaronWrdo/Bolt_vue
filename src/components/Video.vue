@@ -12,6 +12,7 @@
       @change-velocity="changeVelocity"
     />
     <ShieldBar v-if="shieldBarVisible" />
+    <div class="star" v-if="showStar" />
   </div>
 </template>
 <script>
@@ -28,7 +29,8 @@ export default {
   },
   data() {
     return {
-      shieldBarVisible: false
+      shieldBarVisible: false,
+      currentTime: 0
     };
   },
   props: {
@@ -39,6 +41,9 @@ export default {
       type: Boolean
     },
     subtitles: {
+      type: Array
+    },
+    remarks: {
       type: Array
     },
     activeTranscriptIndex: {
@@ -60,6 +65,14 @@ export default {
     },
     player() {
       return this.$refs.videoPlayer.player;
+    },
+    showStar() {
+      return (
+        this.remarks.findIndex(
+          remark =>
+            remark.from < this.currentTime && remark.to > this.currentTime
+        ) !== -1
+      );
     }
   },
   mounted() {
@@ -68,6 +81,7 @@ export default {
       document.addEventListener("keydown", this.transcriptShortcutHandler);
       this.player.el_.addEventListener("mousewheel", this.scrollHandler);
       this.player.el_.addEventListener("DOMMouseScroll", this.scrollHandler);
+      this.player.el_.addEventListener("click", this.onMark);
     }
   },
   beforeDestroy() {
@@ -75,6 +89,7 @@ export default {
     document.removeEventListener("keydown", this.transcriptShortcutHandler);
     this.player.el_.removeEventListener("mousewheel", this.scrollHandler);
     this.player.el_.removeEventListener("DOMMouseScroll", this.scrollHandler);
+    this.player.el_.removeEventListener("click", this.onMark);
   },
   watch: {
     transcriptsLoaded(val) {
@@ -82,12 +97,14 @@ export default {
         document.addEventListener("keydown", this.transcriptShortcutHandler);
         this.player.el_.addEventListener("mousewheel", this.scrollHandler);
         this.player.el_.addEventListener("DOMMouseScroll", this.scrollHandler);
+        this.player.el_.addEventListener("click", this.onMark);
       }
     }
   },
   methods: {
     onPlayerTimeupdate(player) {
       this.$emit("update-time", player.currentTime());
+      this.currentTime = player.currentTime();
     },
     changeShieldBarVis(isVisible) {
       this.shieldBarVisible = isVisible;
@@ -119,6 +136,9 @@ export default {
       this.player.currentTime(this.player.currentTime() - 2);
       this.player.play();
     },
+    // onMark(e) {
+    //   console.log(e);
+    // },
     videoShortcutHandler(event) {
       var e = event || window.event || arguments.callee.caller.arguments[0];
       if (!e) return;
@@ -186,5 +206,13 @@ export default {
 // }
 .video-js .vjs-control-bar {
   display: none;
+}
+.star {
+  background: yellow;
+  position: absolute;
+  top: 18%;
+  left: 3%;
+  width: 5%;
+  height: 4%;
 }
 </style>
