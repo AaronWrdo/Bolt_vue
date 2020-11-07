@@ -2,11 +2,12 @@
   <VueDragResize
     class="shield-bar"
     :isActive="true"
-    :parentLimitation="true"
+    :parentLimitation="false"
     :w="400"
     :h="50"
     v-on:resizing="resize"
     v-on:dragging="resize"
+    @click.stop
   >
   </VueDragResize>
 </template>
@@ -35,8 +36,12 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="less">
 .shield-bar {
   background-color: #222;
+  border-radius: 10px;
+  &:hover {
+    background-color: #333;
+  }
 }
 </style>

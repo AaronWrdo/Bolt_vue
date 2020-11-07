@@ -55,6 +55,7 @@
           :remarks="remarks"
           :activeTranscriptIndex="activeTranscriptIndex"
           @update-time="playerUpdateTime"
+          @mark-line="markLine"
         />
       </div>
       <div slot="right" class="right-panel scroll">

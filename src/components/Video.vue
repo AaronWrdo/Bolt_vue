@@ -11,7 +11,14 @@
       @change-shieldbar-visible="changeShieldBarVis"
       @change-velocity="changeVelocity"
     />
-    <ShieldBar v-if="shieldBarVisible" />
+    <OperatingArea
+      v-if="transcriptsLoaded"
+      :scrollHandler="scrollHandler"
+      :onMark="onMark"
+      :onPlayOrPause="toggleIsPlaying"
+    >
+      <ShieldBar v-if="shieldBarVisible" />
+    </OperatingArea>
     <div class="star" v-if="showStar" />
   </div>
 </template>
@@ -20,17 +27,20 @@ import "video.js/dist/video-js.css";
 import { videoPlayer } from "vue-video-player";
 import ShieldBar from "./ShieldBar.vue";
 import Control from "./Control.vue";
+import OperatingArea from "./OperatingArea.vue";
 
 export default {
   components: {
     videoPlayer,
     ShieldBar,
-    Control
+    Control,
+    OperatingArea
   },
   data() {
     return {
       shieldBarVisible: false,
-      currentTime: 0
+      currentTime: 0,
+      timer: null
     };
   },
   props: {
@@ -79,25 +89,16 @@ export default {
     document.addEventListener("keydown", this.videoShortcutHandler);
     if (this.transcriptsLoaded) {
       document.addEventListener("keydown", this.transcriptShortcutHandler);
-      this.player.el_.addEventListener("mousewheel", this.scrollHandler);
-      this.player.el_.addEventListener("DOMMouseScroll", this.scrollHandler);
-      this.player.el_.addEventListener("click", this.onMark);
     }
   },
   beforeDestroy() {
     document.removeEventListener("keydown", this.videoShortcutHandler);
     document.removeEventListener("keydown", this.transcriptShortcutHandler);
-    this.player.el_.removeEventListener("mousewheel", this.scrollHandler);
-    this.player.el_.removeEventListener("DOMMouseScroll", this.scrollHandler);
-    this.player.el_.removeEventListener("click", this.onMark);
   },
   watch: {
     transcriptsLoaded(val) {
       if (val) {
         document.addEventListener("keydown", this.transcriptShortcutHandler);
-        this.player.el_.addEventListener("mousewheel", this.scrollHandler);
-        this.player.el_.addEventListener("DOMMouseScroll", this.scrollHandler);
-        this.player.el_.addEventListener("click", this.onMark);
       }
     }
   },
@@ -136,9 +137,9 @@ export default {
       this.player.currentTime(this.player.currentTime() - 2);
       this.player.play();
     },
-    // onMark(e) {
-    //   console.log(e);
-    // },
+    onMark() {
+      this.$emit("mark-line", this.subtitles[this.activeTranscriptIndex]);
+    },
     videoShortcutHandler(event) {
       var e = event || window.event || arguments.callee.caller.arguments[0];
       if (!e) return;
