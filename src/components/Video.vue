@@ -19,10 +19,6 @@ import "video.js/dist/video-js.css";
 import { videoPlayer } from "vue-video-player";
 import ShieldBar from "./ShieldBar.vue";
 import Control from "./Control.vue";
-import {
-  handleVideoShortcut,
-  handleTranscriptShortcut
-} from "../utils/hotkeys";
 
 export default {
   components: {
@@ -68,17 +64,25 @@ export default {
   },
   mounted() {
     document.addEventListener("keydown", this.videoShortcutHandler);
-    if (this.transcriptsLoaded)
+    if (this.transcriptsLoaded) {
       document.addEventListener("keydown", this.transcriptShortcutHandler);
+      this.player.el_.addEventListener("mousewheel", this.scrollHandler);
+      this.player.el_.addEventListener("DOMMouseScroll", this.scrollHandler);
+    }
   },
   beforeDestroy() {
     document.removeEventListener("keydown", this.videoShortcutHandler);
-    document.addEventListener("keydown", this.transcriptShortcutHandler);
+    document.removeEventListener("keydown", this.transcriptShortcutHandler);
+    this.player.el_.removeEventListener("mousewheel", this.scrollHandler);
+    this.player.el_.removeEventListener("DOMMouseScroll", this.scrollHandler);
   },
   watch: {
     transcriptsLoaded(val) {
-      if (val)
+      if (val) {
         document.addEventListener("keydown", this.transcriptShortcutHandler);
+        this.player.el_.addEventListener("mousewheel", this.scrollHandler);
+        this.player.el_.addEventListener("DOMMouseScroll", this.scrollHandler);
+      }
     }
   },
   methods: {
@@ -89,26 +93,78 @@ export default {
       this.shieldBarVisible = isVisible;
     },
     changeVelocity(velo) {
-      console.log(this.player);
-      console.log(velo);
       this.player.playbackRate(velo);
     },
     toggleIsPlaying() {
-      console.log(this.player.paused());
-      console.log(this.player);
       if (this.player.paused()) this.player.play();
       else this.player.pause();
     },
-    videoShortcutHandler(e) {
-      handleVideoShortcut(e, this.player);
-    },
-    transcriptShortcutHandler(e) {
-      handleTranscriptShortcut(
-        e,
-        this.player,
-        this.subtitles,
-        this.activeTranscriptIndex
+    playPrevLine() {
+      this.player.currentTime(
+        this.subtitles[this.activeTranscriptIndex - 1].from
       );
+      this.player.play();
+    },
+    playNextLine() {
+      this.player.currentTime(
+        this.subtitles[this.activeTranscriptIndex + 1].from
+      );
+      this.player.play();
+    },
+    playPrevSecs() {
+      this.player.currentTime(this.player.currentTime() + 2);
+      this.player.play();
+    },
+    playNextSecs() {
+      this.player.currentTime(this.player.currentTime() - 2);
+      this.player.play();
+    },
+    videoShortcutHandler(event) {
+      var e = event || window.event || arguments.callee.caller.arguments[0];
+      if (!e) return;
+      switch (e.keyCode) {
+        // 按 E 暂停/播放
+        case 69:
+          this.toggleIsPlaying();
+          break;
+        // 按 W 回退2秒
+        case 87:
+          this.playPrevSecs();
+          break;
+        // 按 R 前进2秒
+        case 82:
+          this.playNextSecs();
+          break;
+      }
+    },
+    transcriptShortcutHandler(event) {
+      var e = event || window.event || arguments.callee.caller.arguments[0];
+      if (!e) return;
+      switch (e.keyCode) {
+        // 按 D 暂停/播放
+        case 68:
+          this.toggleIsPlaying();
+          break;
+        // 按 S 播放上一句
+        case 83:
+          this.playPrevLine();
+          break;
+        // 按 F 播放下一句
+        case 70:
+          this.playNextLine();
+          break;
+      }
+    },
+    scrollHandler(e) {
+      if (!e) return;
+      if (e.wheelDelta) {
+        if (e.wheelDelta > 0) this.playPrevLine();
+        else this.playNextLine();
+      }
+      if (e.detail) {
+        if (e.detail < 0) this.playPrevLine();
+        else this.playNextLine();
+      }
     }
   }
 };
@@ -119,7 +175,7 @@ export default {
 }
 .player-wrapper .video-player {
   width: 100%;
-  height: 70%;
+  height: 80%;
 }
 .video-player > * {
   width: 100%;

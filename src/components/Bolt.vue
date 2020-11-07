@@ -13,8 +13,8 @@
           type="text/css" />
   </head>
   -->
-  <div>
-    <nav>
+  <div class="container">
+    <nav class="nav">
       <div class="nav-left">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-shandian"></use>
@@ -35,9 +35,9 @@
         </li>
       </ul>
     </nav>
-    <h3 id="title"></h3>
-    <Split v-model="split" class="container">
+    <Split v-model="split" class="main">
       <div slot="left" class="left-panel">
+        <h3 id="title">{{ this.videoName }}</h3>
         <label v-if="videoName.length === 0" for="file" class="file-choser">
           <div class="file-choser-desc">
             <svg class="icon" aria-hidden="true">
@@ -132,8 +132,8 @@ export default {
 };
 </script>
 <style>
-.container {
-  height: 600px;
+.main {
+  height: 100%;
   min-width: 800px;
   padding: 20px;
 }
