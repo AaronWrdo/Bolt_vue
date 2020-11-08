@@ -115,6 +115,7 @@ export default {
         type: video.type
       };
       this.videoName = video.name;
+      this.markLine = window.localStorage.getItem(`${this.videoName}-remarks`);
     },
     updateSubtitle(subtitles) {
       this.subtitles = subtitles;
@@ -138,6 +139,10 @@ export default {
       );
       if (findIdx !== -1) this.remarks.splice(findIdx, 1);
       else this.remarks.push({ ...line, notes: "" });
+      window.localStorage.setItem(
+        `${this.videoName}-remarks`,
+        JSON.parse(this.remarks)
+      );
     }
   }
 };

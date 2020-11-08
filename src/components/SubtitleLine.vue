@@ -2,7 +2,7 @@
   <div class="subtitle-line" :class="isActive ? 'active' : ''">
     <div class="subtitle-left">
       <Icon
-        size="24"
+        size="26"
         type="ios-play"
         @click="$emit('start-play-from', item.from)"
       />
