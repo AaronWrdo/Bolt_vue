@@ -46,7 +46,6 @@
   </div>
 </template>
 <script>
-import "./main.css";
 import Nav from "./Nav.vue";
 import Video from "./Video.vue";
 import Subtitle from "./Subtitle.vue";
@@ -154,28 +153,20 @@ export default {
   width: 100%;
 }
 
-.file-choser {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: 3px #ddd dashed;
-  border-radius: 5px;
+#title {
+  margin: 18px;
+  color: #444;
+  font-size: 18px;
 }
 
-.file-choser:hover {
-  border: 3px #69c0ff dashed;
-}
-
-.file-choser-desc {
-  text-align: center;
-  color: #ddd;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.file-choser-desc * {
-  font-size: 22px;
-  margin: 5px 0;
+/*
+    iconfont 使用，重要
+*/
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
 </style>

@@ -13,4 +13,29 @@ export default {
   name: "FilePrompt"
 };
 </script>
-<style></style>
+<style>
+.file-choser {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 3px #ddd dashed;
+  border-radius: 5px;
+}
+
+.file-choser:hover {
+  border: 3px #69c0ff dashed;
+}
+
+.file-choser-desc {
+  text-align: center;
+  color: #ddd;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.file-choser-desc * {
+  font-size: 22px;
+  margin: 5px 0;
+}
+</style>
