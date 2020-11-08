@@ -14,38 +14,11 @@
   </head>
   -->
   <div class="container">
-    <nav class="nav">
-      <div class="nav-left">
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-shandian"></use>
-        </svg>
-        <h1>Bolt</h1>
-      </div>
-      <ul class="nav-right">
-        <li><a>使用说明</a></li>
-        <li>
-          <a>
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-rijianmoshi"></use>
-            </svg>
-            <svg class="icon hidden" aria-hidden="true">
-              <use xlink:href="#icon-yejianmoshi"></use>
-            </svg>
-          </a>
-        </li>
-      </ul>
-    </nav>
+    <Nav />
     <Split v-model="split" class="main">
       <div slot="left" class="left-panel">
         <h3 id="title" v-if="this.videoName">{{ this.videoName }}</h3>
-        <label v-if="videoName.length === 0" for="file" class="file-choser">
-          <div class="file-choser-desc">
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-dianying"></use>
-            </svg>
-            <p>点击或拖拽添加文件</p>
-          </div>
-        </label>
+        <FilePrompt v-if="videoName.length === 0" />
         <Video
           v-else
           ref="videoRef"
@@ -58,22 +31,15 @@
         />
       </div>
       <div slot="right" class="right-panel scroll">
+        <FilePrompt v-if="subtitles.length === 0" />
         <Subtitle
-          v-if="subtitles.length > 0"
+          v-else
           :subtitles="subtitles"
           :remarks="remarks"
           :curPlaySecs="currentPlayTime"
           @start-play-from="subtitleStartPlayFrom"
           @mark-line="markLine"
         />
-        <label v-else for="file" class="file-choser">
-          <div class="file-choser-desc">
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-jishiben"></use>
-            </svg>
-            <p>点击或拖拽添加文件</p>
-          </div>
-        </label>
       </div>
     </Split>
     <FileInput @upload-video="updateVideo" @upload-subtitle="updateSubtitle" />
@@ -81,13 +47,15 @@
 </template>
 <script>
 import "./main.css";
-import FileInput from "./FileInput.vue";
+import Nav from "./Nav.vue";
 import Video from "./Video.vue";
 import Subtitle from "./Subtitle.vue";
+import FilePrompt from "./FilePrompt.vue";
+import FileInput from "./FileInput.vue";
 
 export default {
   name: "Hello",
-  components: { FileInput, Video, Subtitle },
+  components: { Nav, Video, Subtitle, FilePrompt, FileInput },
   data() {
     return {
       split: 0.6,
