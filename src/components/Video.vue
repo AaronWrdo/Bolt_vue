@@ -4,17 +4,28 @@
       ref="videoPlayer"
       :options="playerOptions"
       @timeupdate="onPlayerTimeupdate($event)"
+      @loadeddata="onPlayerLoadeddata($event)"
     >
     </video-player>
     <Control
       :shieldBarVisible="shieldBarVisible"
       @change-shieldbar-visible="changeShieldBarVis"
       @change-velocity="changeVelocity"
-    />
+    >
+      <Slider
+        class="progress-bar"
+        :value="progressVal"
+        :max="duration"
+        :show-tip="'hover'"
+        :marks="marks"
+        :on-change="changeTime"
+      />
+      {{ currentTimeStr }}/{{ durationStr }}
+    </Control>
     <OperatingArea
       v-if="transcriptsLoaded"
       :scrollHandler="scrollHandler"
-      :onMark="onMark"
+      :onMark="remarkSentence"
       :onPlayOrPause="toggleIsPlaying"
     >
       <ShieldBar v-if="shieldBarVisible" />
@@ -28,6 +39,7 @@ import { videoPlayer } from "vue-video-player";
 import ShieldBar from "./ShieldBar.vue";
 import Control from "./Control.vue";
 import OperatingArea from "./OperatingArea.vue";
+import { formatSeconds } from "../utils/index.js";
 
 export default {
   components: {
@@ -40,7 +52,8 @@ export default {
     return {
       shieldBarVisible: false,
       currentTime: 0,
-      timer: null
+      timer: null,
+      duration: 10000
     };
   },
   props: {
@@ -61,7 +74,6 @@ export default {
     }
   },
   computed: {
-    // videojs options
     playerOptions() {
       return {
         // height: "360",
@@ -76,6 +88,9 @@ export default {
     player() {
       return this.$refs.videoPlayer.player;
     },
+    progressVal() {
+      return parseInt(this.currentTime);
+    },
     showStar() {
       return (
         this.remarks.findIndex(
@@ -83,6 +98,19 @@ export default {
             remark.from < this.currentTime && remark.to > this.currentTime
         ) !== -1
       );
+    },
+    durationStr() {
+      return formatSeconds(this.duration);
+    },
+    currentTimeStr() {
+      return formatSeconds(this.currentTime);
+    },
+    marks() {
+      let res = {};
+      this.remarks.forEach(remark => {
+        res[remark.from] = { label: "" };
+      });
+      return res;
     }
   },
   mounted() {
@@ -103,9 +131,15 @@ export default {
     }
   },
   methods: {
+    onPlayerLoadeddata(player) {
+      this.duration = player.duration();
+    },
     onPlayerTimeupdate(player) {
       this.$emit("update-time", player.currentTime());
       this.currentTime = player.currentTime();
+    },
+    changeTime(time) {
+      this.player.currentTime(time);
     },
     changeShieldBarVis(isVisible) {
       this.shieldBarVisible = isVisible;
@@ -137,7 +171,7 @@ export default {
       this.player.currentTime(this.player.currentTime() - 2);
       this.player.play();
     },
-    onMark() {
+    remarkSentence() {
       this.$emit("mark-line", this.subtitles[this.activeTranscriptIndex]);
     },
     videoShortcutHandler(event) {
@@ -202,9 +236,9 @@ export default {
   width: 100%;
   height: 100%;
 }
-// .video-js .vjs-tech {
-//   height: 100%;
-// }
+.video-js .vjs-tech {
+  height: calc(100% - 1px);
+}
 .video-js .vjs-control-bar {
   display: none;
 }
@@ -215,5 +249,12 @@ export default {
   left: 3%;
   width: 5%;
   height: 4%;
+}
+
+.player-wrapper .ivu-slider-stop {
+  width: 1px;
+  height: 10px;
+  margin-top: -2px;
+  background-color: red;
 }
 </style>

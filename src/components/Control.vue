@@ -1,5 +1,6 @@
 <template>
   <div class="control">
+    <slot></slot>
     <div class="changeDiv">
       速度
       <InputNumber
@@ -67,7 +68,6 @@ export default {
 control 
 */
 .control {
-  margin: 20px;
   /* min-width: 400px; */
   display: flex;
   justify-content: flex-start;
@@ -80,6 +80,10 @@ control
   height: 34px;
   text-align: center;
   vertical-align: middle;
+}
+
+.control > .progress-bar {
+  width: 100%;
 }
 
 /* .control .changeDiv {

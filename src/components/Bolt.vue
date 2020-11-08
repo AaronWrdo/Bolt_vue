@@ -58,7 +58,7 @@ export default {
   components: { Nav, Video, Subtitle, FilePrompt, FileInput },
   data() {
     return {
-      split: 0.6,
+      split: 0.65,
       videoSourceInfo: {
         src: "",
         type: ""
@@ -83,7 +83,9 @@ export default {
         type: video.type
       };
       this.videoName = video.name;
-      this.markLine = window.localStorage.getItem(`${this.videoName}-remarks`);
+      this.remarks =
+        JSON.parse(window.localStorage.getItem(`${this.videoName}-remarks`)) ||
+        [];
     },
     updateSubtitle(subtitles) {
       this.subtitles = subtitles;
@@ -109,7 +111,7 @@ export default {
       else this.remarks.push({ ...line, notes: "" });
       window.localStorage.setItem(
         `${this.videoName}-remarks`,
-        JSON.parse(this.remarks)
+        JSON.stringify(this.remarks)
       );
     }
   }
