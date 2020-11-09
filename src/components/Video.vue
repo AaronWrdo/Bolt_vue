@@ -1,12 +1,21 @@
 <template>
-  <div class="player-wrapper">
-    <video-player
-      ref="videoPlayer"
-      :options="playerOptions"
-      @timeupdate="onPlayerTimeupdate($event)"
-      @loadeddata="onPlayerLoadeddata($event)"
-    >
-    </video-player>
+  <div class="video-panel">
+    <div class="wrapper">
+      <video-player
+        ref="videoPlayer"
+        :options="playerOptions"
+        @timeupdate="onPlayerTimeupdate($event)"
+        @loadeddata="onPlayerLoadeddata($event)"
+      >
+      </video-player>
+      <OperatingArea
+        class="operating-area"
+        v-if="transcriptsLoaded"
+        :scrollHandler="scrollHandler"
+        :onMark="remarkSentence"
+        :onPlayOrPause="toggleIsPlaying"
+      />
+    </div>
     <Control
       :shieldBarVisible="shieldBarVisible"
       @change-shieldbar-visible="changeShieldBarVis"
@@ -16,20 +25,14 @@
         class="progress-bar"
         :value="progressVal"
         :max="duration"
-        :show-tip="'hover'"
         :marks="marks"
-        :on-change="changeTime"
+        :show-tip="'hover'"
+        :tip-format="tipFormatter"
+        @on-change="changeTime"
       />
       {{ currentTimeStr }}/{{ durationStr }}
     </Control>
-    <OperatingArea
-      v-if="transcriptsLoaded"
-      :scrollHandler="scrollHandler"
-      :onMark="remarkSentence"
-      :onPlayOrPause="toggleIsPlaying"
-    >
-      <ShieldBar v-if="shieldBarVisible" />
-    </OperatingArea>
+    <ShieldBar v-if="shieldBarVisible" />
     <div class="star" v-if="showStar" />
   </div>
 </template>
@@ -152,15 +155,16 @@ export default {
       else this.player.pause();
     },
     playPrevLine() {
-      this.player.currentTime(
-        this.subtitles[this.activeTranscriptIndex - 1].from
-      );
+      const index = this.activeTranscriptIndex || 1;
+      this.player.currentTime(this.subtitles[index - 1].from);
       this.player.play();
     },
     playNextLine() {
-      this.player.currentTime(
-        this.subtitles[this.activeTranscriptIndex + 1].from
-      );
+      const index =
+        this.activeTranscriptIndex === this.subtitles.length
+          ? this.activeTranscriptIndex - 1
+          : this.activeTranscriptIndex;
+      this.player.currentTime(this.subtitles[index + 1].from);
       this.player.play();
     },
     playPrevSecs() {
@@ -220,18 +224,35 @@ export default {
         if (e.detail < 0) this.playPrevLine();
         else this.playNextLine();
       }
-    }
+    },
+    tipFormatter: formatSeconds
   }
 };
 </script>
 <style lang="less">
-.player-wrapper {
+.video-panel {
   width: 100%;
+
+  .wrapper {
+    position: relative;
+    width: 100%;
+    height: 80%;
+
+    .video-player {
+      width: 100%;
+      height: 100%;
+    }
+    .operating-area {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 999;
+    }
+  }
 }
-.player-wrapper .video-player {
-  width: 100%;
-  height: 80%;
-}
+
 .video-player > * {
   width: 100%;
   height: 100%;
@@ -251,10 +272,10 @@ export default {
   height: 4%;
 }
 
-.player-wrapper .ivu-slider-stop {
+.video-panel .ivu-slider-stop {
   width: 1px;
   height: 10px;
   margin-top: -2px;
-  background-color: red;
+  background-color: #ffa940;
 }
 </style>

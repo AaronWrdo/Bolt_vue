@@ -1,6 +1,5 @@
 <template>
   <div
-    class="operating-area"
     @mousewheel="scrollHandler"
     @DOMMouseScroll="scrollHandler"
     @click="onClick"
@@ -46,17 +45,3 @@ export default {
   }
 };
 </script>
-<style lang="less">
-.operating-area {
-  //   visibility: hidden;
-  //   border: 3px burlywood dashed;
-  //   border-radius: 50%;
-  //   &:hover {
-  //     background-color: burlywood;
-  //   }
-  //   & > * {
-  //     width: 100%;
-  //     height: 100%;
-  //   }
-}
-</style>

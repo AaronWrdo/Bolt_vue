@@ -151,14 +151,14 @@ export default {
   height: 100%;
 }
 
-.left-panel .player-wrapper {
+.left-panel .video-panel {
   height: 100%;
   width: 100%;
 }
 
 #title {
   margin: 18px;
-  color: #444;
+  color: #515a6e;
   font-size: 18px;
 }
 
