@@ -33,7 +33,7 @@
       {{ currentTimeStr }}/{{ durationStr }}
     </Control>
     <ShieldBar v-if="shieldBarVisible" />
-    <div class="star" v-if="showStar" />
+    <Icon v-if="showStar" class="star" size="30" :type="'md-heart'" />
   </div>
 </template>
 <script>
@@ -248,7 +248,6 @@ export default {
       height: 100%;
       top: 0;
       left: 0;
-      z-index: 999;
     }
   }
 }
@@ -264,12 +263,10 @@ export default {
   display: none;
 }
 .star {
-  background: yellow;
+  color: #ffa940;
   position: absolute;
-  top: 18%;
+  top: 15%;
   left: 3%;
-  width: 5%;
-  height: 4%;
 }
 
 .video-panel .ivu-slider-stop {
